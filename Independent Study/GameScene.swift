@@ -90,7 +90,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     
     func personHitsObject(person: SKSpriteNode, box: SKSpriteNode){
         print("hit object!")
-        person.removeAllActions()
+        //person.removeAllActions()
         //stop bear and it turn around and walk the other way
         
     }
@@ -108,7 +108,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         person.physicsBody?.isDynamic = true
         person.physicsBody?.categoryBitMask = PhysicsCategory.Person
         person.physicsBody?.contactTestBitMask = PhysicsCategory.Box
-        person.physicsBody?.collisionBitMask = PhysicsCategory.Person
+        person.physicsBody?.collisionBitMask = PhysicsCategory.Person | PhysicsCategory.groundCategory
+        person.physicsBody?.friction = 0
         person.physicsBody?.allowsRotation = false
         person.physicsBody?.usesPreciseCollisionDetection = true
         person.physicsBody?.affectedByGravity = true
@@ -155,11 +156,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             ground.zPosition = -1 //-10
             ground.position = CGPoint(x: (groundTexture.size().width / 2.0 + (groundTexture.size().width * CGFloat(i))), y: groundTexture.size().height / 4)
             
-            ground.physicsBody = SKPhysicsBody(rectangleOf: ground.size)
+            let groundSize: CGSize = CGSize(width: ground.size.width / 2, height: ground.size.height / 2)
+            
+            ground.physicsBody = SKPhysicsBody(rectangleOf: groundSize)
             ground.physicsBody?.isDynamic = true
             ground.physicsBody?.categoryBitMask = PhysicsCategory.groundCategory
             ground.physicsBody?.contactTestBitMask = PhysicsCategory.Person
             ground.physicsBody?.collisionBitMask = PhysicsCategory.Person | (self.physicsBody?.collisionBitMask)!
+            ground.physicsBody?.friction = 0
             ground.physicsBody?.allowsRotation = false
             ground.physicsBody?.usesPreciseCollisionDetection = true
             ground.physicsBody?.affectedByGravity = false
