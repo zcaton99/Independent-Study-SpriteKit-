@@ -31,10 +31,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     // create random num generator
     // if( num%4 ==0) creates random number of objects (25% of the time)
     
+    
     override func didMove(to view: SKView) {
         backgroundColor = UIColor.black
         physicsWorld.contactDelegate = self
-        physicsWorld.gravity = CGVector.zero
+        //physicsWorld.gravity = CGVector.zero
         addChild(label)
         
         //creates invisible wall to keep nodes inside the screen
@@ -79,7 +80,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         box.physicsBody?.isDynamic = true
         box.physicsBody?.categoryBitMask = PhysicsCategory.Box
         box.physicsBody?.contactTestBitMask = PhysicsCategory.Person
-        box.physicsBody?.collisionBitMask = PhysicsCategory.None
+        box.physicsBody?.collisionBitMask = PhysicsCategory.Person
         box.physicsBody?.usesPreciseCollisionDetection = true
         
         addChild(box)
@@ -87,9 +88,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     }
     
     
-    func personHitsBox(person: SKSpriteNode, box: SKSpriteNode){
-        print("hit")
-        
+    func personHitsObject(person: SKSpriteNode, box: SKSpriteNode){
+        print("hit object!")
+        person.removeAllActions()
         //stop bear and it turn around and walk the other way
         
     }
@@ -107,9 +108,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         person.physicsBody?.isDynamic = true
         person.physicsBody?.categoryBitMask = PhysicsCategory.Person
         person.physicsBody?.contactTestBitMask = PhysicsCategory.Box
-        person.physicsBody?.collisionBitMask = PhysicsCategory.None
-        
-        
+        person.physicsBody?.collisionBitMask = PhysicsCategory.Person
+        person.physicsBody?.allowsRotation = false
+        person.physicsBody?.usesPreciseCollisionDetection = true
+        person.physicsBody?.affectedByGravity = true
     }
     
     func personMovedEnded(){
@@ -133,12 +135,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             if let person = firstBody.node as? SKSpriteNode, let
                 box = secondBody.node as? SKSpriteNode {
                 //projectileDidCollideWithMonster(projectile: projectile, monster: monster)
-                personHitsBox(person: person, box: box)
+                personHitsObject(person: person, box: box)
             }
         }else if ((firstBody.categoryBitMask & PhysicsCategory.groundCategory != 0) && (secondBody.categoryBitMask & PhysicsCategory.groundCategory != 0)){
             if let person = firstBody.node as? SKSpriteNode, let ground = secondBody.node as? SKSpriteNode{
                 
-                personHitsBox(person: person, box: ground)
+                personHitsObject(person: person, box: ground)
                 
             }
         }
@@ -150,15 +152,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         
         for i in 0 ... 1 {
             let ground = SKSpriteNode(texture: groundTexture)
-            ground.zPosition = -10
-            ground.position = CGPoint(x: (groundTexture.size().width / 2.0 + (groundTexture.size().width * CGFloat(i))), y: groundTexture.size().height / 2)
+            ground.zPosition = -1 //-10
+            ground.position = CGPoint(x: (groundTexture.size().width / 2.0 + (groundTexture.size().width * CGFloat(i))), y: groundTexture.size().height / 4)
             
+            ground.physicsBody = SKPhysicsBody(rectangleOf: ground.size)
+            ground.physicsBody?.isDynamic = true
             ground.physicsBody?.categoryBitMask = PhysicsCategory.groundCategory
             ground.physicsBody?.contactTestBitMask = PhysicsCategory.Person
+            ground.physicsBody?.collisionBitMask = PhysicsCategory.Person | (self.physicsBody?.collisionBitMask)!
+            ground.physicsBody?.allowsRotation = false
+            ground.physicsBody?.usesPreciseCollisionDetection = true
+            ground.physicsBody?.affectedByGravity = false
             
             addChild(ground)
             
-            //makes it infinitely move 
+            //makes it infinitely move
 //            let moveLeft = SKAction.moveBy(x: -groundTexture.size().width, y: 0, duration: 5)
 //            let moveReset = SKAction.moveBy(x: groundTexture.size().width, y: 0, duration: 0)
 //            let moveLoop = SKAction.sequence([moveLeft, moveReset])
