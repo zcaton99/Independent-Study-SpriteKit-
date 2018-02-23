@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B3AF5B52028981600870F6E /* BearImages.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 0B3AF5B42028981600870F6E /* BearImages.atlas */; };
+		0B6D564C202DF5B100A612D1 /* PersonImg.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 0B6D564B202DF5B100A612D1 /* PersonImg.atlas */; };
+		0B75733920372AE3007281D8 /* Enemy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B75733820372AE3007281D8 /* Enemy.swift */; };
 		0BA0D978201BD7AE00DF122E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BA0D977201BD7AE00DF122E /* AppDelegate.swift */; };
 		0BA0D97A201BD7AE00DF122E /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 0BA0D979201BD7AE00DF122E /* GameScene.sks */; };
 		0BA0D97C201BD7AE00DF122E /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = 0BA0D97B201BD7AE00DF122E /* Actions.sks */; };
@@ -18,6 +21,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0B3AF5B42028981600870F6E /* BearImages.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = BearImages.atlas; sourceTree = "<group>"; };
+		0B6D564B202DF5B100A612D1 /* PersonImg.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = PersonImg.atlas; sourceTree = "<group>"; };
+		0B75733820372AE3007281D8 /* Enemy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enemy.swift; sourceTree = "<group>"; };
 		0BA0D974201BD7AE00DF122E /* Independent Study.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Independent Study.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0BA0D977201BD7AE00DF122E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0BA0D979201BD7AE00DF122E /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
@@ -60,11 +66,14 @@
 		0BA0D976201BD7AE00DF122E /* Independent Study */ = {
 			isa = PBXGroup;
 			children = (
+				0B6D564B202DF5B100A612D1 /* PersonImg.atlas */,
+				0B3AF5B42028981600870F6E /* BearImages.atlas */,
 				0BA0D977201BD7AE00DF122E /* AppDelegate.swift */,
 				0BA0D979201BD7AE00DF122E /* GameScene.sks */,
 				0BA0D97B201BD7AE00DF122E /* Actions.sks */,
 				0BA0D97D201BD7AE00DF122E /* GameScene.swift */,
 				0BA0D97F201BD7AE00DF122E /* GameViewController.swift */,
+				0B75733820372AE3007281D8 /* Enemy.swift */,
 				0BA0D981201BD7AE00DF122E /* Main.storyboard */,
 				0BA0D984201BD7AE00DF122E /* Assets.xcassets */,
 				0BA0D986201BD7AE00DF122E /* LaunchScreen.storyboard */,
@@ -132,9 +141,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B6D564C202DF5B100A612D1 /* PersonImg.atlas in Resources */,
 				0BA0D983201BD7AE00DF122E /* Main.storyboard in Resources */,
 				0BA0D97A201BD7AE00DF122E /* GameScene.sks in Resources */,
 				0BA0D985201BD7AE00DF122E /* Assets.xcassets in Resources */,
+				0B3AF5B52028981600870F6E /* BearImages.atlas in Resources */,
 				0BA0D988201BD7AE00DF122E /* LaunchScreen.storyboard in Resources */,
 				0BA0D97C201BD7AE00DF122E /* Actions.sks in Resources */,
 			);
@@ -147,6 +158,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B75733920372AE3007281D8 /* Enemy.swift in Sources */,
 				0BA0D97E201BD7AE00DF122E /* GameScene.swift in Sources */,
 				0BA0D980201BD7AE00DF122E /* GameViewController.swift in Sources */,
 				0BA0D978201BD7AE00DF122E /* AppDelegate.swift in Sources */,

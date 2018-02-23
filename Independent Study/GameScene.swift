@@ -9,102 +9,232 @@
 import SpriteKit
 import GameplayKit
 
-class GameScene: SKScene {
+var person : SKSpriteNode!
+var personWalkingFrames : [SKTexture]!
+
+class GameScene: SKScene, SKPhysicsContactDelegate{
     
-    var entities = [GKEntity]()
-    var graphs = [String : GKGraph]()
+    var label: SKLabelNode {
+        let label = SKLabelNode()
+        label.horizontalAlignmentMode = .right
+        label.position = CGPoint(x: 660, y: 320)
+        label.text = "0"
+        return label
+    }
     
-    private var lastUpdateTime : TimeInterval = 0
-    private var label : SKLabelNode?
-    private var spinnyNode : SKShapeNode?
     
     override func sceneDidLoad() {
+        physicsWorld.contactDelegate = self
+        
+    }
+    
+    // create random num generator
+    // if( num%4 ==0) creates random number of objects (25% of the time)
+    
+    override func didMove(to view: SKView) {
+        backgroundColor = UIColor.black
+        physicsWorld.contactDelegate = self
+        physicsWorld.gravity = CGVector.zero
+        addChild(label)
+        
+        //creates invisible wall to keep nodes inside the screen
+        let borderBody = SKPhysicsBody(edgeLoopFrom: self.frame)
+        borderBody.friction = 0
+        self.physicsBody = borderBody
+        
+        
+        let personAnimatedAtlas = SKTextureAtlas(named: "BearImages")//PersonImg
+        var walkFrames = [SKTexture]()
+        
+        let numImages = personAnimatedAtlas.textureNames.count
+        var i = 1 //0
+        while( i < (numImages / 2) ) { // divide by 2
+            let personTextureName = "bear\(i)~ipad"
+            //print("person-\(i)")
+            print("bear\(i)~ipad")
+            walkFrames.append(personAnimatedAtlas.textureNamed(personTextureName))
+            i += 1
 
-        self.lastUpdateTime = 0
-        
-        // Get label node from scene and store it for use later
-        self.label = self.childNode(withName: "//helloLabel") as? SKLabelNode
-        if let label = self.label {
-            label.alpha = 0.0
-            label.run(SKAction.fadeIn(withDuration: 2.0))
         }
         
-        // Create shape node to use during mouse interaction
-        let w = (self.size.width + self.size.height) * 0.05
-        self.spinnyNode = SKShapeNode.init(rectOf: CGSize.init(width: w, height: w), cornerRadius: w * 0.3)
+        personWalkingFrames = walkFrames
         
-        if let spinnyNode = self.spinnyNode {
-            spinnyNode.lineWidth = 2.5
+        let firstFrame = personWalkingFrames[0]
+        person = SKSpriteNode(texture: firstFrame)
+        person.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
+        addChild(person)
+        
+        walkingPerson()
+        addBox()
+        
+        createGround()
+    }
+    
+    func addBox(){
+        
+        let box = SKSpriteNode(imageNamed: "box")
+        box.position = CGPoint(x: 130, y: 100)
+        
+        box.physicsBody = SKPhysicsBody(rectangleOf: box.size)
+        box.physicsBody?.isDynamic = true
+        box.physicsBody?.categoryBitMask = PhysicsCategory.Box
+        box.physicsBody?.contactTestBitMask = PhysicsCategory.Person
+        box.physicsBody?.collisionBitMask = PhysicsCategory.None
+        box.physicsBody?.usesPreciseCollisionDetection = true
+        
+        addChild(box)
+        
+    }
+    
+    
+    func personHitsBox(person: SKSpriteNode, box: SKSpriteNode){
+        print("hit")
+        
+        //stop bear and it turn around and walk the other way
+        
+    }
+    
+    func walkingPerson() {
+        //This is our general runAction method to make our bear walk.
+        person.run(SKAction.repeatForever(
+            SKAction.animate(with: personWalkingFrames,
+            timePerFrame: 0.1,
+            resize: false,
+            restore: true)),
+        withKey:"walkingInPlacePerson")
+        
+        person.physicsBody = SKPhysicsBody(rectangleOf: person.size)
+        person.physicsBody?.isDynamic = true
+        person.physicsBody?.categoryBitMask = PhysicsCategory.Person
+        person.physicsBody?.contactTestBitMask = PhysicsCategory.Box
+        person.physicsBody?.collisionBitMask = PhysicsCategory.None
+        
+        
+    }
+    
+    func personMovedEnded(){
+        person.removeAllActions()
+    }
+
+    func didBegin(_ contact: SKPhysicsContact) {
+        var firstBody: SKPhysicsBody
+        var secondBody: SKPhysicsBody
+        if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
+            firstBody = contact.bodyA
+            secondBody = contact.bodyB
+        } else {
+            firstBody = contact.bodyB
+            secondBody = contact.bodyA
+        }
+        
+        
+        if ((firstBody.categoryBitMask & PhysicsCategory.Person != 0) &&
+            (secondBody.categoryBitMask & PhysicsCategory.Box != 0)) {
+            if let person = firstBody.node as? SKSpriteNode, let
+                box = secondBody.node as? SKSpriteNode {
+                //projectileDidCollideWithMonster(projectile: projectile, monster: monster)
+                personHitsBox(person: person, box: box)
+            }
+        }else if ((firstBody.categoryBitMask & PhysicsCategory.groundCategory != 0) && (secondBody.categoryBitMask & PhysicsCategory.groundCategory != 0)){
+            if let person = firstBody.node as? SKSpriteNode, let ground = secondBody.node as? SKSpriteNode{
+                
+                personHitsBox(person: person, box: ground)
+                
+            }
+        }
+    }
+    
+    
+    func createGround() {
+        let groundTexture = SKTexture(imageNamed: "ground")
+        
+        for i in 0 ... 1 {
+            let ground = SKSpriteNode(texture: groundTexture)
+            ground.zPosition = -10
+            ground.position = CGPoint(x: (groundTexture.size().width / 2.0 + (groundTexture.size().width * CGFloat(i))), y: groundTexture.size().height / 2)
             
-            spinnyNode.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat(Double.pi), duration: 1)))
-            spinnyNode.run(SKAction.sequence([SKAction.wait(forDuration: 0.5),
-                                              SKAction.fadeOut(withDuration: 0.5),
-                                              SKAction.removeFromParent()]))
-        }
-    }
-    
-    
-    func touchDown(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.green
-            self.addChild(n)
-        }
-    }
-    
-    func touchMoved(toPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.blue
-            self.addChild(n)
-        }
-    }
-    
-    func touchUp(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.red
-            self.addChild(n)
+            ground.physicsBody?.categoryBitMask = PhysicsCategory.groundCategory
+            ground.physicsBody?.contactTestBitMask = PhysicsCategory.Person
+            
+            addChild(ground)
+            
+            //makes it infinitely move 
+//            let moveLeft = SKAction.moveBy(x: -groundTexture.size().width, y: 0, duration: 5)
+//            let moveReset = SKAction.moveBy(x: groundTexture.size().width, y: 0, duration: 0)
+//            let moveLoop = SKAction.sequence([moveLeft, moveReset])
+//            let moveForever = SKAction.repeatForever(moveLoop)
+//
+//            ground.run(moveForever)
         }
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let label = self.label {
-            label.run(SKAction.init(named: "Pulse")!, withKey: "fadeInOut")
-        }
         
-        for t in touches { self.touchDown(atPoint: t.location(in: self)) }
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchMoved(toPoint: t.location(in: self)) }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
+        
+        
+        let touch = touches.first as! UITouch
+        let location = touch.location(in: self)
+        var multiplierForDirection: CGFloat
+        
+        let personVelocity = self.frame.size.width / 3.0
+        
+        let moveDistance = CGPoint(x: location.x - person.position.x, y: location.y - person.position.y)
+        let distanceToMove = sqrt(moveDistance.x * moveDistance.x + moveDistance.y * moveDistance.y)
+        
+        let moveDuration = distanceToMove / personVelocity
+        
+        
+        if (moveDistance.x < 0){
+            //walk left
+            multiplierForDirection = 1.0 //-1
+        }else{
+            //walk right
+            multiplierForDirection = -1.0 //1
+        }
+        
+        person.xScale = fabs(person.xScale) * multiplierForDirection
+        
+        
+        if (person.action(forKey: "personMoving") != nil){
+            //stop just the moving to a new location, but leave the walking legs running
+            person.removeAction(forKey: "personMoving")
+        }
+        if(person.action(forKey: "walkingInPlacePerson") == nil){
+            //if legs are not moving go ahead and start them
+            walkingPerson()
+        }
+        
+        let moveAction = (SKAction.move(to: location, duration: (Double(moveDuration))))
+        
+        let doneAction = (SKAction.run({
+            print("Animation complete")
+            self.personMovedEnded()
+        }))
+        
+        let moveActionWithDone = (SKAction.sequence([moveAction, doneAction]))
+        person.run(moveActionWithDone, withKey: "personMoving")
+        
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
     }
+    
     
     
     override func update(_ currentTime: TimeInterval) {
-        // Called before each frame is rendered
-        
-        // Initialize _lastUpdateTime if it has not already been
-        if (self.lastUpdateTime == 0) {
-            self.lastUpdateTime = currentTime
-        }
-        
-        // Calculate time since last update
-        let dt = currentTime - self.lastUpdateTime
-        
-        // Update entities
-        for entity in self.entities {
-            entity.update(deltaTime: dt)
-        }
-        
-        self.lastUpdateTime = currentTime
     }
+}
+
+struct PhysicsCategory {
+    static let None      : UInt32 = 0
+    static let All       : UInt32 = UInt32.max
+    static let groundCategory: UInt32 = 0x1 << 0
+    static let Person    : UInt32 = 0b1       // 1
+    static let Box       : UInt32 = 0b10      // 2
 }
