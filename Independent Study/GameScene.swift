@@ -79,8 +79,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         box.physicsBody = SKPhysicsBody(rectangleOf: box.size)
         box.physicsBody?.isDynamic = true
         box.physicsBody?.categoryBitMask = PhysicsCategory.Box
-        box.physicsBody?.contactTestBitMask = PhysicsCategory.Person
-        box.physicsBody?.collisionBitMask = PhysicsCategory.Person
+        box.physicsBody?.contactTestBitMask = PhysicsCategory.Person | PhysicsCategory.groundCategory
+        box.physicsBody?.collisionBitMask = PhysicsCategory.Person | PhysicsCategory.groundCategory
+        box.physicsBody?.friction = 0
         box.physicsBody?.usesPreciseCollisionDetection = true
         
         addChild(box)
@@ -107,7 +108,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         person.physicsBody = SKPhysicsBody(rectangleOf: person.size)
         person.physicsBody?.isDynamic = true
         person.physicsBody?.categoryBitMask = PhysicsCategory.Person
-        person.physicsBody?.contactTestBitMask = PhysicsCategory.Box
+        person.physicsBody?.contactTestBitMask = PhysicsCategory.Box | PhysicsCategory.groundCategory
         person.physicsBody?.collisionBitMask = PhysicsCategory.Person | PhysicsCategory.groundCategory
         person.physicsBody?.friction = 0
         person.physicsBody?.allowsRotation = false
@@ -141,7 +142,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         }else if ((firstBody.categoryBitMask & PhysicsCategory.groundCategory != 0) && (secondBody.categoryBitMask & PhysicsCategory.groundCategory != 0)){
             if let person = firstBody.node as? SKSpriteNode, let ground = secondBody.node as? SKSpriteNode{
                 
-                personHitsObject(person: person, box: ground)
+                //personHitsObject(person: person, box: ground)
                 
             }
         }
@@ -161,7 +162,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             ground.physicsBody = SKPhysicsBody(rectangleOf: groundSize)
             ground.physicsBody?.isDynamic = true
             ground.physicsBody?.categoryBitMask = PhysicsCategory.groundCategory
-            ground.physicsBody?.contactTestBitMask = PhysicsCategory.Person
+            ground.physicsBody?.contactTestBitMask = PhysicsCategory.Person | (self.physicsBody?.contactTestBitMask)!
             ground.physicsBody?.collisionBitMask = PhysicsCategory.Person | (self.physicsBody?.collisionBitMask)!
             ground.physicsBody?.friction = 0
             ground.physicsBody?.allowsRotation = false
